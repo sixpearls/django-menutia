@@ -14,9 +14,6 @@ from django.core.urlresolvers import reverse
 import operator
 
 class MenuBase(models.Model):
-    html_id = models.CharField(_('HTML id'), max_length=255, blank=True)
-    html_classes = models.CharField(_('HTML classes'), max_length=255,blank=True)
-    selected_classes = models.CharField(_('HTML classes for selected elements'), max_length=255,blank=True)
 
     class Meta:
         abstract = True
@@ -25,7 +22,11 @@ class Menu(MenuBase):
     title = models.SlugField(_('title'), unique=True)
     description = models.TextField(_('description'), blank=True)
 
-    parent_menu_item = models.ForeignKey('MenuItem',related_name="child_menus",blank=True)
+    html_id = models.CharField(_('HTML id'), max_length=255, blank=True)
+    html_classes = models.CharField(_('HTML classes'), max_length=255,blank=True)
+    selected_classes = models.CharField(_('HTML classes for selected elements'), max_length=255,blank=True)
+
+    parent_menu_item = models.ForeignKey('MenuItem',related_name="child_menus",blank=True,null=True)
    
     def __unicode__(self):
         return "%s" % self.title
@@ -35,10 +36,14 @@ class MenuItem(MenuBase):
     text = models.CharField(_('text'), max_length=255, blank=True)
 
     order = models.IntegerField(_('order'))     
+    html_id = models.CharField(_('HTML id'), max_length=255, blank=True)
+    html_classes = models.CharField(_('HTML classes'), max_length=255,blank=True)
+    selected_classes = models.CharField(_('HTML classes for selected elements'), max_length=255,blank=True)
+
     exact_match = models.BooleanField(default=True)
     url = models.CharField(_('URL'), max_length=255, blank=True)
 
-    item_view = models.CharField(_('View to match'),blank=True,
+    item_view = models.CharField(_('View to match'),blank=True,max_length=255,
         help_text='Python path to view that can be reversed')
 
     # something to make this more generic?
@@ -50,7 +55,7 @@ class MenuItem(MenuBase):
         ordering = ["order"]
     
     def __unicode__(self):
-        return "%s" % self.text
+        return "%s > %s" % (self.menu.__unicode__(), self.text)
 
     def get_match_test_function(self):
         if self.exact_match:
@@ -71,5 +76,5 @@ class MenuItem(MenuBase):
 
     def match(self, request_url):
         tester = self.get_match_test_function()
-        url = self.get_url()
+        url = self.get_url
         return tester(request_url,url)
