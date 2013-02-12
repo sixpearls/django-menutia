@@ -1,0 +1,10 @@
+<li
+{% if Item.selected and Menu.selected_classes or Item.html_classes %}
+ class="{% if Item.selected %}{{ Menu.selected_classes }}{% endif %}
+ {% if Item.selected and Menu.selected_classes and Item.html_classes %} {% endif %}
+ {{ Item.html_classes }}"
+{% endif %}
+{% if Item.html_id %} id="{{ Item.html_id }}"{% endif %}>
+<a href="{{ Item.url }}">{{ Item.text }}</a>
+{{ extra_content }}
+</li>
