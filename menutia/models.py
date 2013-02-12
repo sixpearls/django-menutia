@@ -12,13 +12,9 @@ from django.contrib.contenttypes import generic
 from django.db.models.signals import post_save
 from django.core.urlresolvers import reverse
 import operator
+import ast
 
-class MenuBase(models.Model):
-
-    class Meta:
-        abstract = True
-
-class Menu(MenuBase):
+class Menu(models.Model):
     title = models.SlugField(_('title'), unique=True)
     description = models.TextField(_('description'), blank=True)
 
@@ -31,7 +27,7 @@ class Menu(MenuBase):
     def __unicode__(self):
         return "%s" % self.title
     
-class MenuItem(MenuBase):
+class MenuItem(models.Model):
     menu = models.ForeignKey(Menu,related_name="menu_items")
     text = models.CharField(_('text'), max_length=255, blank=True)
 
@@ -45,6 +41,10 @@ class MenuItem(MenuBase):
 
     item_view = models.CharField(_('View to match'),blank=True,max_length=255,
         help_text='Python path to view that can be reversed')
+    item_view_args = models.CharField(_('View args'),default='()',blank=True,max_length=255,
+        help_text='args to pass to reverser')
+    item_view_kwargs = models.CharField(_('View kwargs'),default='{}',blank=True,max_length=255,
+        help_text='kwargs to pass to reverser')
 
     # something to make this more generic?
     item_type = models.ForeignKey(ContentType, blank=True, null=True)
@@ -68,7 +68,9 @@ class MenuItem(MenuBase):
         if self.url:
             return self.url
         if self.item_view:
-            return reverse(self.item_view)
+            args = ast.literal_eval(self.item_view_args)
+            kwargs = ast.literal_eval(self.item_view_kwargs)
+            return reverse(self.item_view,args=args,kwargs=kwargs)
         if self.item:
             return self.item.get_absolute_url()
         else:
