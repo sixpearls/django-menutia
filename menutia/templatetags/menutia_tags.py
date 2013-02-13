@@ -16,9 +16,8 @@ def show_menu(context,menu_title=''):
         {% show_menu 'main' %}
     """
     this_menu = Menu.objects.get(title=menu_title)
-    menu_items = MenuItem.objects.filter(menu=this_menu)
     content = ''
-    for menu_item in menu_items:
+    for menu_item in this_menu.menu_items.all():
         menu_item.selected = menu_item.match(context['request'].path)
         extra_content = ''
         for child_menu in menu_item.child_menus.all():

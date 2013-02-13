@@ -18,37 +18,43 @@ window.onload=IE_submenu_fix;
 
 $(function() { //create select drop down for small screens
     // Create the dropdown base
-    $("<select />").appendTo("nav#primary");
+    function parseMenu(ul_element,prefix_in,select_el) {
+        var select = select_el;
+        var prefix = prefix_in;
 
-    // Create default option "Go to..."
-    $("<option />", {
-     "selected": "selected",
-     "value"   : "",
-     "text"    : "Go to..."
-    }).appendTo("nav select");
+        // Populate dropdown with menu items
+        $(ul_element).children("li").each(function(index,element) {
 
-    // Populate dropdown with menu items
-    $("nav ul li a").each(function() {
+            var a_el = $(element).children("a");
+            var menuText = prefix + a_el.text();
 
-        var el = $(this);
-        var isChild = el.parents('.sub-menu').length;
-        var menuText = el.text();
+            $("<option />", {
+                    "value"   : a_el.attr("href"),
+                    "text"    : menuText
+            }).appendTo(select);
 
-        if (isChild) {
-            menuText = '— ' + menuText;
-        }
+            $(element).children('ul').each(function(index, element) {
+                parseMenu(element,prefix+' - ',select)
+            });
+             
+        });
+    }
 
+    $("nav > ul").each( function(index, element) {
+        var select = $("<select />").appendTo(element.parentElement);
+        // Create default option "Go to..."
         $("<option />", {
-                "value"   : el.attr("href"),
-                "text"    : menuText
-        }).appendTo("nav select");
-         
-    });
+         "selected": "selected",
+         "value"   : "",
+         "text"    : "Go to..."
+        }).appendTo(select);
 
-    // To make dropdown actually work
-    // To make more unobtrusive: http://css-tricks.com/4064-unobtrusive-page-changer/
-    $("nav select").change(function() {
-    window.location = $(this).find("option:selected").val();
+        parseMenu(element,'',select);
+        // To make dropdown actually work
+        // To make more unobtrusive: http://css-tricks.com/4064-unobtrusive-page-changer/
+        $(select).change(function() {
+        window.location = $(this).find("option:selected").val();
+        });
     });
 
 });
