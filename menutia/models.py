@@ -61,7 +61,7 @@ class MenuItem(models.Model):
         if self.exact_match:
             return operator.__eq__
         else:
-            return str.startswith
+            return unicode.startswith
 
     @property
     def get_url(self):
