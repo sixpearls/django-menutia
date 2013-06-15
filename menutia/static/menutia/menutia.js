@@ -28,10 +28,14 @@ $(function() { //create select drop down for small screens
             var a_el = $(element).children("a");
             var menuText = prefix + a_el.text();
 
-            $("<option />", {
-                    "value"   : a_el.attr("href"),
-                    "text"    : menuText
-            }).appendTo(select);
+            if (a_el.length > 0) {
+
+                $("<option />", {
+                        "value"   : a_el.attr("href"),
+                        "text"    : menuText
+                }).appendTo(select);
+
+            }
 
             $(element).children('ul').each(function(index, element) {
                 parseMenu(element,prefix+' - ',select)

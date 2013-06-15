@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from menutia import settings # cache menus?
 from menutia.models import Menu, MenuItem
 from django.utils.safestring import mark_safe
+from django.conf import settings
 # also add a jQuery ul menu --> dropdown select tag
 
 register = template.Library()
