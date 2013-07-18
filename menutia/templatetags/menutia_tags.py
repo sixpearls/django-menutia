@@ -21,7 +21,7 @@ def show_menu(context,menu_title=''):
     try:
         path = context['request'].path
     except:
-        path = ''
+        path = u''
     for menu_item in this_menu.menu_items.all():
         menu_item.selected = menu_item.match(path)
         extra_content = ''
