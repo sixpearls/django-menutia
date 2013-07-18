@@ -18,8 +18,12 @@ def show_menu(context,menu_title=''):
     """
     this_menu = Menu.objects.get(title=menu_title)
     content = ''
+    try:
+        path = context['request'].path
+    except:
+        path = ''
     for menu_item in this_menu.menu_items.all():
-        menu_item.selected = menu_item.match(context['request'].path)
+        menu_item.selected = menu_item.match(path)
         extra_content = ''
         for child_menu in menu_item.child_menus.all():
             extra_content += show_menu(context,child_menu.title)
