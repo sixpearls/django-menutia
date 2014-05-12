@@ -11,7 +11,7 @@ from django.conf import settings
 register = template.Library()
 
 @register.simple_tag(takes_context=True)
-def show_menu(context,menu_title=''):
+def show_menu(context,menu_title='',extra_lis=''):
     """
         {% load menutia_tags  %}
         {% show_menu 'main' %}
@@ -29,5 +29,6 @@ def show_menu(context,menu_title=''):
             extra_content += show_menu(context,child_menu.title)
         content += render_to_string('menutia/menu_li.html',
             {'Item' : menu_item, 'Menu' : this_menu, 'extra_content': mark_safe(extra_content) })
+    content += mark_safe(extra_lis)
     result = render_to_string('menutia/menu_ul.html',{'content' : mark_safe(content), 'Menu' : this_menu, })
     return result
